@@ -1,9 +1,10 @@
-import js from '@eslint/js'
-import prettierConfig from 'eslint-config-prettier'
-import react from 'eslint-plugin-react'
-import reactHooks from 'eslint-plugin-react-hooks'
-import reactRefresh from 'eslint-plugin-react-refresh'
-import globals from 'globals'
+import js from '@eslint/js';
+import prettierConfig from 'eslint-config-prettier';
+import importPlugin from 'eslint-plugin-import';
+import react from 'eslint-plugin-react';
+import reactHooks from 'eslint-plugin-react-hooks';
+import reactRefresh from 'eslint-plugin-react-refresh';
+import globals from 'globals';
 
 export default [
   { ignores: ['dist', 'node_modules', '*.config.js'] },
@@ -24,7 +25,8 @@ export default [
     plugins: {
       react,
       'react-hooks': reactHooks,
-      'react-refresh': reactRefresh
+      'react-refresh': reactRefresh,
+      import: importPlugin
     },
     settings: {
       react: {
@@ -87,18 +89,33 @@ export default [
       'react-hooks/exhaustive-deps': 'warn',
 
       // Import/export rules
-      'sort-imports': [
+      'import/order': [
         'error',
         {
-          ignoreCase: true,
-          ignoreDeclarationSort: true,
-          ignoreMemberSort: false,
-          memberSyntaxSortOrder: ['none', 'all', 'multiple', 'single']
+          groups: [
+            'builtin', // Node built-in modules
+            'external', // External libraries
+            'internal', // Internal modules (if using path mapping)
+            'parent', // Parent directory imports
+            'sibling', // Same directory imports
+            'index' // Index file imports
+          ],
+          'newlines-between': 'always',
+          alphabetize: {
+            order: 'asc',
+            caseInsensitive: true
+          }
         }
       ],
 
       // Disable formatting rules that conflict with Prettier
-      ...prettierConfig.rules
+      ...prettierConfig.rules,
+
+      // Semicolon rules (after prettier config to override disabled rules)
+      semi: ['error', 'always'],
+      'semi-spacing': ['error', { before: false, after: true }],
+
+      'react/prop-types': 'off'
     }
   }
-]
+];
